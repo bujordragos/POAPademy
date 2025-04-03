@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { NextPage } from "next";
 // import { useAccount } from "wagmi";
-import { AcademicCapIcon, BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { AcademicCapIcon, BookOpenIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 // import { Address } from "~~/components/scaffold-eth";
 
@@ -25,11 +25,11 @@ const Home: NextPage = () => {
           <div className="flex justify-center items-center gap-24 flex-col md:flex-row">
             {" "}
             <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary mb-4" />
+              <BookOpenIcon className="h-8 w-8 fill-secondary mb-4" />
               <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contracts
+                Add a new course & quiz using the{" "}
+                <Link href="/add-courses" passHref className="link">
+                  Add Courses
                 </Link>{" "}
                 tab.
               </p>
@@ -37,9 +37,9 @@ const Home: NextPage = () => {
             <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
               <AcademicCapIcon className="h-8 w-8 fill-secondary mb-4" />
               <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Learning
+                See all the available courses using the{" "}
+                <Link href="/courses" passHref className="link">
+                  Courses
                 </Link>{" "}
                 tab.
               </p>
@@ -47,9 +47,9 @@ const Home: NextPage = () => {
             <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
               <MagnifyingGlassIcon className="h-8 w-8 fill-secondary mb-4" />
               <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Block Explorer
+                Explore your POAP collection using the{" "}
+                <Link href="/poaps" passHref className="link">
+                  My Poaps
                 </Link>{" "}
                 tab.
               </p>
