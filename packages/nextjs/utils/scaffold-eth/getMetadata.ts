@@ -44,7 +44,27 @@ export const getMetadata = ({
       images: [imageUrl],
     },
     icons: {
-      icon: [{ url: "/favicon.png", sizes: "32x32", type: "image/png" }],
+      icon: [
+        {
+          url: "/poap_light.png",
+          media: "(prefers-color-scheme: light)",
+          type: "image/png",
+          sizes: "64x64",
+        },
+
+        {
+          url: "/poap_dark.png",
+          media: "(prefers-color-scheme: dark)",
+          type: "image/png",
+          sizes: "64x64",
+        },
+
+        {
+          url: "/favicon-default.png",
+          type: "image/png",
+          sizes: "64x64",
+        },
+      ],
     },
   };
 };
