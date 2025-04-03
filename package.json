@@ -58,6 +58,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.2.0",
+    "axios": "^1.8.4",
     "react-icons": "^5.5.0"
   }
 }

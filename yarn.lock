@@ -7294,7 +7294,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.6.7":
+"axios@npm:^1.6.7, axios@npm:^1.8.4":
   version: 1.8.4
   resolution: "axios@npm:1.8.4"
   dependencies:
@@ -16140,6 +16140,7 @@ __metadata:
   resolution: "se-2@workspace:."
   dependencies:
     "@openzeppelin/contracts": ^5.2.0
+    axios: ^1.8.4
     husky: ~9.1.6
     lint-staged: ~13.2.2
     react-icons: ^5.5.0
