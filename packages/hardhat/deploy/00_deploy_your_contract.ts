@@ -21,7 +21,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   */
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
-  const contractName = "POAPademy";
+  const contractName = "POAPademyOnChain";
 
   await deploy(contractName, {
     from: deployer,
