@@ -5,7 +5,7 @@ const deployPOAPademyOnChain: DeployFunction = async function (hre: HardhatRunti
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  const deployment = await deploy("POAPademyOnChain", {
+  const deployment = await deploy("YourContract", {
     from: deployer,
     args: [], // No constructor arguments
     log: true,
