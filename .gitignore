@@ -12,6 +12,9 @@ node_modules
 # eslint
 .eslintcache
 
+# local contracts
+packages/nextjs/contracts/deployedContracts.ts
+
 # misc
 .DS_Store
 
