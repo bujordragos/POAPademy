@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
-import { Course, courseIdCounter, courses } from "../../../lib/coursesData";
-
-let currentCourseId = courseIdCounter;
+import { prisma } from "~~/lib/prisma";
 
 export async function GET() {
-  return NextResponse.json({ courses }, { status: 200 });
+  try {
+    const courses = await prisma.course.findMany();
+    return NextResponse.json({ courses }, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
@@ -13,16 +16,16 @@ export async function POST(request: Request) {
     if (!title || !description || !fileUrl) {
       return NextResponse.json({ error: "Missing course details" }, { status: 400 });
     }
-    const newCourse: Course = {
-      id: currentCourseId++,
-      title,
-      description,
-      fileUrl,
-      quizData,
-    };
+    const course = await prisma.course.create({
+      data: {
+        title,
+        description,
+        fileUrl,
+        quizData: quizData ? JSON.parse(quizData) : null,
+      },
+    });
 
-    courses.push(newCourse);
-    return NextResponse.json({ course: newCourse }, { status: 201 });
+    return NextResponse.json({ course }, { status: 201 });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
