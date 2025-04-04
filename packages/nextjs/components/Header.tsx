@@ -21,6 +21,18 @@ export const menuLinks: HeaderMenuLink[] = [
     label: "Home",
     href: "/",
   },
+  {
+    label: "Add Course",
+    href: "/add-courses",
+  },
+  {
+    label: "Courses",
+    href: "/courses",
+  },
+  {
+    label: "My POAPs",
+    href: "/poaps",
+  },
 ];
 
 export const HeaderMenuLinks = () => {

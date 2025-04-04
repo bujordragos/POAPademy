@@ -123,7 +123,13 @@ const CoursesPage: React.FC = () => {
             >
               <div className="p-5">
                 <h2 className="text-xl font-semibold mb-2 truncate">{course.title}</h2>
-                <p className="text-gray-600 mb-4 line-clamp-2">{course.description}</p>
+                <p
+                  className={
+                    resolvedTheme === "dark" ? "text-[#FFFFFF] mb-4 line-clamp-2" : "text-[#151926] mb-4 line-clamp-2"
+                  }
+                >
+                  {course.description}
+                </p>
 
                 <div className="flex justify-between items-center mt-4">
                   <Link href={`/courses/${course.id}`} className="text-blue-600 hover:text-blue-800 font-medium">

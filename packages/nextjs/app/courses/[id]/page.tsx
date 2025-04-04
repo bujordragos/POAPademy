@@ -91,14 +91,10 @@ const CourseDetailPage: React.FC = () => {
       <div className="flex justify-between items-start mb-6">
         <div>
           <h1 className="text-3xl font-bold mb-2">{course.title}</h1>
-          <p className="text-gray-600 mb-4">{course.description}</p>
+          <p className={resolvedTheme === "dark" ? "text-[FFFFFF] mb-4" : "text-[#151926] mb-4"}>
+            {course.description}
+          </p>
         </div>
-        <button
-          onClick={handleStartQuiz}
-          className={`px-4 py-2 rounded ${resolvedTheme === "dark" ? "bg-[#1F7D53]" : "bg-[#C5BAFF]"} text-white`}
-        >
-          Take Quiz
-        </button>
       </div>
 
       <div className="mb-8">
@@ -107,7 +103,7 @@ const CourseDetailPage: React.FC = () => {
           <div className="border p-4 rounded">
             <p className="mb-2">Course material is available for viewing or download:</p>
             <a href={course.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
-              View/Download Material
+              Download Material
             </a>
           </div>
         ) : (

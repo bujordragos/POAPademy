@@ -245,7 +245,15 @@ const UploadCoursePage: React.FC = () => {
             </div>
           ))}
 
-          <button type="button" onClick={addQuestion} className="px-3 py-1 bg-gray-200 rounded">
+          <button
+            type="button"
+            onClick={addQuestion}
+            className={
+              resolvedTheme === "dark"
+                ? "px-3 py-1 bg-[#1F7D53] rounded"
+                : "px-3 py-1 bg-[#C5BAFF] text-[#FFFFFF] rounded"
+            }
+          >
             Add Question
           </button>
         </div>

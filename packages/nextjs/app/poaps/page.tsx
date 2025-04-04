@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { ethers } from "ethers";
+import { useTheme } from "next-themes";
 
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const CONTRACT_ABI = [
@@ -672,6 +673,9 @@ const PoapPage: React.FC = () => {
   const [poaps, setPoaps] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
   const connectWallet = async () => {
     if (typeof window.ethereum !== "undefined") {
       try {
@@ -729,17 +733,33 @@ const PoapPage: React.FC = () => {
     }
   }, [fetchPOAPs, userAddress]);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Your POAP Certificates</h1>
       {!userAddress ? (
-        <button onClick={connectWallet} className="bg-blue-500 text-white px-4 py-2">
+        <button
+          onClick={connectWallet}
+          className={
+            resolvedTheme === "dark" ? "bg-[#1F7D53] text-white px-4 py-2" : "bg-[#C5BAFF] text-white px-4 py-2"
+          }
+        >
           Connect MetaMask
         </button>
       ) : (
         <div>
           <p>Your wallet: {userAddress}</p>
-          <button onClick={fetchPOAPs} className="bg-green-500 text-white px-4 py-2 my-4">
+          <button
+            onClick={fetchPOAPs}
+            className={
+              resolvedTheme === "dark" ? "bg-[#1F7D53] text-white px-4 py-2" : "bg-[#C5BAFF] text-white px-4 py-2"
+            }
+          >
             Refresh POAPs
           </button>
           {loading ? (
