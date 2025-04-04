@@ -4288,7 +4288,7 @@ __metadata:
     eslint-config-prettier: ~8.10.0
     eslint-plugin-prettier: ~5.2.1
     kubo-rpc-client: ~5.0.2
-    next: ~15.2.0
+    next: latest
     next-nprogress-bar: ~2.3.13
     next-themes: ~0.3.0
     postcss: ~8.4.45
@@ -14115,7 +14115,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next@npm:~15.2.0":
+"next@npm:latest":
   version: 15.2.4
   resolution: "next@npm:15.2.4"
   dependencies:
