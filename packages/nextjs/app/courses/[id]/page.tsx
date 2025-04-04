@@ -5,12 +5,16 @@ import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { useTheme } from "next-themes";
 
+// Update the Course interface to include the new fields
 interface Course {
   id: number;
   title: string;
   description: string;
   fileUrl: string;
   quizData: string;
+  fileData?: Uint8Array | null; // Optional since it may not be returned in the API
+  fileName?: string | null;
+  fileType?: string | null;
 }
 
 const CourseDetailPage: React.FC = () => {
@@ -61,6 +65,11 @@ const CourseDetailPage: React.FC = () => {
     router.push(`/courses/${courseId}/quiz`);
   };
 
+  const handleDownload = () => {
+    // Open the download endpoint in a new tab
+    window.open(`/api/courses/${courseId}/download`, "_blank");
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto p-4 flex justify-center items-center min-h-screen">
@@ -99,12 +108,15 @@ const CourseDetailPage: React.FC = () => {
 
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Course Material</h2>
-        {course.fileUrl ? (
+        {course.fileUrl || course.fileData ? (
           <div className="border p-4 rounded">
             <p className="mb-2">Course material is available for viewing or download:</p>
-            <a href={course.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+            <button
+              onClick={handleDownload}
+              className={`px-4 py-2 rounded ${resolvedTheme === "dark" ? "bg-[#1F7D53] hover:bg-[#186144]" : "bg-[#C5BAFF] hover:bg-[#AFA0F5]"} text-white`}
+            >
               Download Material
-            </a>
+            </button>
           </div>
         ) : (
           <p>No course materials available.</p>

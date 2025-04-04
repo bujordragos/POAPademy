@@ -25,6 +25,7 @@ const UploadCoursePage: React.FC = () => {
   ]);
   const [uploadStatus, setUploadStatus] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { resolvedTheme } = useTheme();
   const router = useRouter();
@@ -123,34 +124,48 @@ const UploadCoursePage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    let fileUrl = "";
-    if (file) {
-      fileUrl = URL.createObjectURL(file);
-    }
-
-    // Format quiz data properly as required by API
-    const quizData: Quiz = {
-      questions: quizQuestions.map(q => ({
-        id: q.id,
-        question: q.question,
-        options: q.options.filter(opt => opt.trim() !== ""), // Remove empty options
-        correctAnswer: q.correctAnswer,
-      })),
-    };
+    setIsSubmitting(true);
+    setUploadStatus("Uploading course...");
 
     try {
-      // Send JSON data with properly formatted quiz data
-      const response = await axios.post("/api/courses", {
-        title,
-        description,
-        fileUrl,
-        quizData: JSON.stringify(quizData),
+      // Format quiz data properly as required by API
+      const quizData: Quiz = {
+        questions: quizQuestions.map(q => ({
+          id: q.id,
+          question: q.question,
+          options: q.options.filter(opt => opt.trim() !== ""), // Remove empty options
+          correctAnswer: q.correctAnswer,
+        })),
+      };
+
+      // Create a FormData object to handle file upload
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("quizData", JSON.stringify(quizData));
+
+      if (file) {
+        formData.append("file", file);
+      }
+
+      // Send the FormData with the file
+      const response = await axios.post("/api/courses", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
+
       setUploadStatus("Course uploaded successfully!");
       console.log(response.data);
+
+      setTimeout(() => {
+        router.push("/courses");
+      }, 2000);
     } catch (error: any) {
       console.error(error);
       setUploadStatus(`Error uploading course: ${error.response?.data?.error || error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -260,9 +275,12 @@ const UploadCoursePage: React.FC = () => {
 
         <button
           type="submit"
-          className={`px-4 py-2 rounded ${resolvedTheme === "dark" ? "bg-[#1F7D53]" : "bg-[#C5BAFF]"} text-white`}
+          disabled={isSubmitting}
+          className={`px-4 py-2 rounded ${
+            resolvedTheme === "dark" ? "bg-[#1F7D53]" : "bg-[#C5BAFF]"
+          } text-white ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
         >
-          Upload Course
+          {isSubmitting ? "Uploading..." : "Upload Course"}
         </button>
       </form>
       {uploadStatus && (

@@ -21,16 +21,24 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { title, description, fileUrl, quizData } = await request.json();
+    // For multipart/form-data requests
+    const formData = await request.formData();
 
-    if (!title || !description || !fileUrl) {
+    // Extract form fields
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
+    const quizDataRaw = formData.get("quizData") as string;
+    const file = formData.get("file") as File | null;
+
+    if (!title || !description) {
       return NextResponse.json({ error: "Missing course details" }, { status: 400 });
     }
 
     // Validate quizData if provided
-    if (quizData) {
+    let parsedQuiz: Quiz | null = null;
+    if (quizDataRaw) {
       try {
-        const parsedQuiz = JSON.parse(quizData) as Quiz;
+        parsedQuiz = JSON.parse(quizDataRaw) as Quiz;
         if (!parsedQuiz.questions || !Array.isArray(parsedQuiz.questions)) {
           throw new Error("Invalid quiz format");
         }
@@ -39,17 +47,47 @@ export async function POST(request: Request) {
       }
     }
 
+    // Prepare data for course creation
+    const courseData: any = {
+      title,
+      description,
+      fileUrl: "", // We'll store an empty or placeholder URL
+      quizData: quizDataRaw || null,
+    };
+
+    // Process file if provided
+    if (file) {
+      // Get file details
+      const fileName = file.name;
+      const fileType = file.type;
+
+      // Convert file to buffer
+      const arrayBuffer = await file.arrayBuffer();
+      const fileData = Buffer.from(arrayBuffer);
+
+      // Add file data to course data
+      courseData.fileData = fileData;
+      courseData.fileName = fileName;
+      courseData.fileType = fileType;
+    }
+
+    // Create course with all the data
     const course = await prisma.course.create({
-      data: {
-        title,
-        description,
-        fileUrl,
-        quizData: quizData ? quizData : null, // Store as string (Prisma will handle JSON)
-      },
+      data: courseData,
     });
 
-    return NextResponse.json({ course }, { status: 201 });
+    return NextResponse.json(
+      {
+        course: {
+          id: course.id,
+          title: course.title,
+          description: course.description,
+        },
+      },
+      { status: 201 },
+    );
   } catch (error: any) {
+    console.error("Error creating course:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
