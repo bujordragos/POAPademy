@@ -5,11 +5,24 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useTheme } from "next-themes";
 
+interface QuizQuestion {
+  id: number;
+  question: string;
+  options: string[];
+  correctAnswer: string;
+}
+
+interface Quiz {
+  questions: QuizQuestion[];
+}
+
 const UploadCoursePage: React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
-  const [quizData, setQuizData] = useState("");
+  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([
+    { id: 1, question: "", options: ["", "", "", ""], correctAnswer: "" },
+  ]);
   const [uploadStatus, setUploadStatus] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -73,25 +86,71 @@ const UploadCoursePage: React.FC = () => {
     }
   };
 
+  const handleQuestionChange = (index: number, field: keyof QuizQuestion, value: string | string[]) => {
+    const newQuestions = [...quizQuestions];
+    newQuestions[index] = { ...newQuestions[index], [field]: value };
+    setQuizQuestions(newQuestions);
+  };
+
+  const handleOptionChange = (questionIndex: number, optionIndex: number, value: string) => {
+    const newQuestions = [...quizQuestions];
+    const newOptions = [...newQuestions[questionIndex].options];
+    newOptions[optionIndex] = value;
+    newQuestions[questionIndex].options = newOptions;
+    setQuizQuestions(newQuestions);
+  };
+
+  const addQuestion = () => {
+    setQuizQuestions([
+      ...quizQuestions,
+      {
+        id: quizQuestions.length + 1,
+        question: "",
+        options: ["", "", "", ""],
+        correctAnswer: "",
+      },
+    ]);
+  };
+
+  const removeQuestion = (index: number) => {
+    if (quizQuestions.length > 1) {
+      const newQuestions = quizQuestions.filter((_, i) => i !== index);
+      // Update IDs to maintain sequence
+      const updatedQuestions = newQuestions.map((q, i) => ({ ...q, id: i + 1 }));
+      setQuizQuestions(updatedQuestions);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     let fileUrl = "";
     if (file) {
       fileUrl = URL.createObjectURL(file);
     }
+
+    // Format quiz data properly as required by API
+    const quizData: Quiz = {
+      questions: quizQuestions.map(q => ({
+        id: q.id,
+        question: q.question,
+        options: q.options.filter(opt => opt.trim() !== ""), // Remove empty options
+        correctAnswer: q.correctAnswer,
+      })),
+    };
+
     try {
-      // Send JSON data instead of FormData
+      // Send JSON data with properly formatted quiz data
       const response = await axios.post("/api/courses", {
         title,
         description,
         fileUrl,
-        quizData,
+        quizData: JSON.stringify(quizData),
       });
       setUploadStatus("Course uploaded successfully!");
       console.log(response.data);
     } catch (error: any) {
       console.error(error);
-      setUploadStatus("Error uploading course.");
+      setUploadStatus(`Error uploading course: ${error.response?.data?.error || error.message}`);
     }
   };
 
@@ -128,17 +187,69 @@ const UploadCoursePage: React.FC = () => {
             required
           />
         </div>
+
         <div className="mb-4">
-          <label className="block mb-2">Quiz Data (JSON Format)</label>
-          <textarea
-            className="border p-2 w-full rounded"
-            value={quizData}
-            onChange={e => setQuizData(e.target.value)}
-            placeholder='{"1": "A", "2": "B", "3": "C", "4": "D", "5": "A"}'
-            required
-          ></textarea>
-          <p className="text-xs text-gray-500 mt-1">Enter the quiz questions and correct answers as JSON.</p>
+          <label className="block mb-2">Quiz Questions</label>
+          {quizQuestions.map((question, qIndex) => (
+            <div key={qIndex} className="mb-6 p-4 border rounded">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-medium">Question {qIndex + 1}</h3>
+                <button type="button" onClick={() => removeQuestion(qIndex)} className="text-red-500">
+                  Remove
+                </button>
+              </div>
+
+              <div className="mb-2">
+                <label className="block mb-1 text-sm">Question Text</label>
+                <input
+                  type="text"
+                  className="border p-2 w-full rounded"
+                  value={question.question}
+                  onChange={e => handleQuestionChange(qIndex, "question", e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="mb-2">
+                <label className="block mb-1 text-sm">Options</label>
+                {question.options.map((option, oIndex) => (
+                  <div key={oIndex} className="flex mb-1">
+                    <span className="mr-2 p-1">{String.fromCharCode(65 + oIndex)}:</span>
+                    <input
+                      type="text"
+                      className="border p-1 flex-grow rounded"
+                      value={option}
+                      onChange={e => handleOptionChange(qIndex, oIndex, e.target.value)}
+                      required
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div>
+                <label className="block mb-1 text-sm">Correct Answer</label>
+                <select
+                  className="border p-2 rounded"
+                  value={question.correctAnswer}
+                  onChange={e => handleQuestionChange(qIndex, "correctAnswer", e.target.value)}
+                  required
+                >
+                  <option value="">Select correct answer</option>
+                  {question.options.map((_, oIndex) => (
+                    <option key={oIndex} value={String.fromCharCode(65 + oIndex)}>
+                      {String.fromCharCode(65 + oIndex)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ))}
+
+          <button type="button" onClick={addQuestion} className="px-3 py-1 bg-gray-200 rounded">
+            Add Question
+          </button>
         </div>
+
         <button
           type="submit"
           className={`px-4 py-2 rounded ${resolvedTheme === "dark" ? "bg-[#1F7D53]" : "bg-[#C5BAFF]"} text-white`}

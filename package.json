@@ -61,6 +61,7 @@
     "@openzeppelin/contracts": "^5.2.0",
     "@prisma/client": "^6.5.0",
     "axios": "^1.8.4",
+    "dotenv": "^16.4.7",
     "ethers": "^6.13.5",
     "react-icons": "^5.5.0"
   }
