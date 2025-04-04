@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { mintCertificate } from "../../../lib/contractService";
-import { Course, courses } from "../../../lib/coursesData";
+import { mintCertificate } from "~~/lib/contractService";
+import { Course, courses } from "~~/lib/coursesData";
 
 export async function POST(request: Request) {
   try {
