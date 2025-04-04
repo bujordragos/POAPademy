@@ -7,15 +7,13 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { courseId, answers, walletAddress, courseName, courseDescription } = body;
 
-    // Find the course by id
-    const course = courses.find((c: Course) => c.id === courseId);
+    // Convert courseId to a number to ensure proper matching.
+    const course = courses.find((c: Course) => c.id === Number(courseId));
     if (!course || !course.quizData) {
       return NextResponse.json({ success: false, error: "Course or quiz data not found" }, { status: 404 });
     }
 
     // Parse the stored quiz JSON.
-    // Expected structure:
-    // { "questions": [ { "id": 1, "question": "...", "options": [...], "correctAnswer": "..." }, ... ] }
     const quiz = JSON.parse(course.quizData);
 
     // Build a mapping of correct answers from the quiz JSON.
