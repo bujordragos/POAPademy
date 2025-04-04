@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
-import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 import { hardhat } from "viem/chains";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
@@ -51,14 +51,6 @@ export const Footer = () => {
                 className={resolvedTheme === "dark" ? "text-white hover:underline" : "text-[#151926] hover:underline"}
               >
                 <FaTwitter size={24} />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/poapademy-company-69427a35a/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={resolvedTheme === "dark" ? "text-white hover:underline" : "text-[#151926] hover:underline"}
-              >
-                <FaLinkedin size={24} />
               </a>
             </div>
           </div>
