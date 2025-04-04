@@ -49,6 +49,7 @@
     "verify": "yarn hardhat:verify"
   },
   "devDependencies": {
+    "@next/swc-darwin-arm64": "^15.2.4",
     "husky": "~9.1.6",
     "lint-staged": "~13.2.2",
     "prisma": "^6.5.0"
