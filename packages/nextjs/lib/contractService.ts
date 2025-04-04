@@ -1,85 +1,138 @@
+// lib/contractService.ts
 import { ethers } from "ethers";
 
-const providerUrl = process.env.NEXT_PUBLIC_PROVIDER_URL || "http://localhost:8545";
-const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "0xYourContractAddress"; // modifica
-
-// Minimal ABI for mintPOAP function
-const contractAbi = [
+// Your contract ABI - you can import this from a JSON file if preferred
+const CertificateABI = [
+  // Only including the necessary functions to keep this cleaner
   {
     inputs: [
-      { internalType: "address", name: "recipient", type: "address" },
-      { internalType: "uint256", name: "courseId", type: "uint256" },
-      { internalType: "string", name: "courseName", type: "string" },
-      { internalType: "string", name: "courseDescription", type: "string" },
+      {
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "courseId",
+        type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "courseName",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "courseDescription",
+        type: "string",
+      },
     ],
     name: "mintPOAP",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
     stateMutability: "nonpayable",
     type: "function",
   },
 ];
 
-interface MintResult {
-  transactionHash: string;
-  tokenId?: number;
-}
+// Configuration for Hardhat local network
+const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const HARDHAT_RPC_URL = "http://127.0.0.1:8545";
 
-export const mintCertificate = async (
+// Private key from Hardhat accounts (this is the default first account private key)
+// In production, this would come from an environment variable
+const ADMIN_PRIVATE_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+
+/**
+ * Mints a certificate NFT (POAP) for a user who completed a course
+ *
+ * @param recipientAddress The wallet address to receive the certificate
+ * @param courseId The ID of the completed course
+ * @param courseName The name of the completed course
+ * @param courseDescription Description of the completed course
+ * @returns Transaction hash of the minting operation
+ */
+export async function mintCertificate(
   recipientAddress: string,
   courseId: number,
   courseName: string,
   courseDescription: string,
-): Promise<MintResult> => {
+): Promise<string> {
+  // Validate input parameters
+  if (!recipientAddress || !ethers.isAddress(recipientAddress)) {
+    throw new Error("Invalid recipient wallet address");
+  }
+
+  console.log(`Starting certificate minting process for recipient: ${recipientAddress}, course: ${courseId}`);
+
   try {
-    // Validate inputs
-    if (!ethers.isAddress(recipientAddress)) {
-      throw new Error("Invalid recipient address");
+    // Create provider and signer for local Hardhat network
+    const provider = new ethers.JsonRpcProvider(HARDHAT_RPC_URL);
+    const signer = new ethers.Wallet(ADMIN_PRIVATE_KEY, provider);
+
+    // Get network info for logging
+    const network = await provider.getNetwork();
+    console.log(`Connected to network: ${network.name} (chainId: ${network.chainId})`);
+
+    // Create contract instance
+    const certificateContract = new ethers.Contract(CONTRACT_ADDRESS, CertificateABI, signer);
+
+    // Check if the certificate already exists for this recipient and course
+    try {
+      const exists = await certificateContract.certificateExists(courseId, recipientAddress);
+      if (exists) {
+        throw new Error("Certificate already minted for this course for this recipient");
+      }
+    } catch (e) {
+      // If the check fails but not because it already exists, log and continue
+      const error = e as Error;
+      if (error.message && error.message.includes("already minted")) {
+        throw error;
+      }
+      console.warn("Could not check if certificate exists, proceeding with minting:", error.message);
     }
-    if (courseId <= 0) {
-      throw new Error("Course ID must be positive");
-    }
 
-    // Initialize provider and wallet
-    const provider = new ethers.JsonRpcProvider(providerUrl);
-
-    const privateKey = process.env.PRIVATE_KEY;
-    if (!privateKey) {
-      throw new Error("PRIVATE_KEY environment variable not set");
-    }
-
-    const wallet = new ethers.Wallet(privateKey, provider);
-    const contract = new ethers.Contract(contractAddress, contractAbi, wallet);
-
-    // Estimate gas first
-    const gasEstimate = await contract.mintPOAP.estimateGas(recipientAddress, courseId, courseName, courseDescription);
-    // Send transaction with 20% gas buffer
-    const gasLimit = (gasEstimate * 120n) / 100n;
-
-    const tx = await contract.mintPOAP(recipientAddress, courseId, courseName, courseDescription, {
-      gasLimit: gasLimit, // Use the calculated buffer
+    // Send the transaction to mint the POAP certificate
+    console.log("Sending mintPOAP transaction...");
+    const tx = await certificateContract.mintPOAP(recipientAddress, courseId, courseName, courseDescription, {
+      gasLimit: 500000, // Hardhat doesn't need this but it's good practice
     });
 
-    // Wait for transaction to be mined
-    const receipt = await tx.wait();
-    if (!receipt) {
-      throw new Error("Transaction receipt not found");
+    console.log(`Transaction sent: ${tx.hash}`);
+
+    // Wait for transaction confirmation
+    const receipt = await tx.wait(1); // Wait for 1 confirmation
+
+    console.log(`Certificate successfully minted! Transaction hash: ${receipt.transactionHash}`);
+
+    return receipt.transactionHash;
+  } catch (e) {
+    const error = e as any;
+    console.error("Error in mintCertificate:", error);
+
+    // Provide clearer error messages based on common issues
+    if (error.message && error.message.includes("already minted")) {
+      throw new Error("Certificate already exists for this user and course");
     }
 
-    // Parse events to get tokenId if needed
-    let tokenId: number | undefined;
-    if (receipt.logs) {
-      const event = contract.interface.parseLog(receipt.logs[0]);
-      if (event?.name === "POAPMinted") {
-        tokenId = Number(event.args.tokenId);
-      }
+    if (error.code === "INSUFFICIENT_FUNDS") {
+      throw new Error("Admin wallet does not have enough ETH for gas");
     }
 
-    return {
-      transactionHash: tx.hash,
-      tokenId,
-    };
-  } catch (error) {
-    console.error("Minting error:", error);
-    throw new Error(error instanceof Error ? error.message : "Failed to mint certificate");
+    if (error.code === "CALL_EXCEPTION" || error.code === "UNPREDICTABLE_GAS_LIMIT") {
+      throw new Error("Contract call failed: you may not have permission to mint or contract is not properly deployed");
+    }
+
+    if (error.code === "NETWORK_ERROR") {
+      throw new Error("Cannot connect to Hardhat node. Make sure it is running at " + HARDHAT_RPC_URL);
+    }
+
+    // Re-throw with more context
+    throw new Error(`Certificate minting failed: ${error.message}`);
   }
-};
+}

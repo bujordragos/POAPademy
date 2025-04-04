@@ -48,25 +48,20 @@ const QuizPage: React.FC = () => {
           router.push("/login-page");
           return;
         }
-
         // Get wallet address
         const accounts = await window.ethereum.request({
           method: "eth_accounts",
         });
-
         if (!accounts || accounts.length === 0) {
           setError("No wallet connected");
           router.push("/login-page");
           return;
         }
-
         setWalletAddress(accounts[0]);
-
         // Fetch course data
         const response = await axios.get(`/api/courses/${courseId}`);
         const courseData = response.data.course;
         setCourse(courseData);
-
         // Parse quiz data from the course
         if (courseData.quizData) {
           try {
@@ -74,9 +69,7 @@ const QuizPage: React.FC = () => {
               typeof courseData.quizData === "string"
                 ? (JSON.parse(courseData.quizData) as Quiz)
                 : (courseData.quizData as Quiz);
-
             setQuiz(parsedQuiz);
-
             // Initialize userAnswers with empty values for all questions
             const initialAnswers: Record<number, string> = {};
             parsedQuiz.questions.forEach(q => {
@@ -97,7 +90,6 @@ const QuizPage: React.FC = () => {
         setLoading(false);
       }
     };
-
     if (courseId) {
       fetchCourse();
     }
@@ -114,7 +106,6 @@ const QuizPage: React.FC = () => {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
-
     try {
       const response = await axios.post("/api/quiz", {
         courseId,
@@ -124,8 +115,9 @@ const QuizPage: React.FC = () => {
         courseDescription: course?.description || "",
       });
 
+      // Use success value from API response instead of hardcoding
       setResult({
-        success: true,
+        success: response.data.success,
         score: response.data.score,
         txHash: response.data.txHash,
       });

@@ -74,11 +74,21 @@ export async function POST(request: Request) {
     const score = (correctCount / quizData.questions.length) * 100;
 
     if (score < 80) {
-      return NextResponse.json({ success: false, error: "Quiz score too low to mint POAP", score }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "Quiz score too low to mint certificate", score },
+        { status: 400 },
+      );
     }
 
-    const txHash = await mintCertificate(walletAddress, Number(courseId), courseName, courseDescription);
-    return NextResponse.json({ success: true, txHash, score }, { status: 200 });
+    try {
+      const txHash = await mintCertificate(walletAddress, Number(courseId), courseName, courseDescription);
+      return NextResponse.json({ success: true, txHash, score }, { status: 200 });
+    } catch (error: any) {
+      return NextResponse.json(
+        { success: false, error: `Failed to mint certificate: ${error.message}`, score },
+        { status: 500 },
+      );
+    }
   } catch (error: any) {
     console.error("Error processing quiz submission:", error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
