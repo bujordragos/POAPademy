@@ -8,9 +8,12 @@ generator client {
 }
 
 model Course {
-  id          Int    @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String
   description String
-  fileUrl     String
+  fileUrl     String?  // Make optional since we'll add fileData
   quizData    Json?
+  fileData    Bytes?   // To store the actual file content
+  fileName    String?  // Original filename
+  fileType    String?  // MIME type
 }
