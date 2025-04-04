@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import axios from "axios";
 
 type Course = {
@@ -8,7 +9,7 @@ type Course = {
   title: string;
   description: string;
   fileUrl: string;
-  quizData?: string; // Quiz data stored as a JSON string
+  quizData?: string;
 };
 
 const CoursesPage: React.FC = () => {
@@ -31,7 +32,7 @@ const CoursesPage: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading courses...</div>;
+    return <div className="p-4">Loading courses...</div>;
   }
 
   return (
@@ -42,21 +43,25 @@ const CoursesPage: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {courses.map(course => (
-            <div key={course.id} className="border p-4 rounded">
+            <div key={course.id} className="border p-4 rounded relative">
+              {course.quizData && (
+                <Link href={`/courses/${course.id}/quiz`}>
+                  <button className="absolute top-2 right-2 bg-blue-500 text-white px-4 py-2 rounded">Take Quiz</button>
+                </Link>
+              )}
               <h2 className="text-xl font-semibold">{course.title}</h2>
               <p>{course.description}</p>
               <p>
-                File URL:{" "}
-                <a href={course.fileUrl} target="_blank" rel="noopener noreferrer">
-                  {course.fileUrl}
+                <strong>File URL:</strong>{" "}
+                <a
+                  href={course.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "green", textDecoration: "underline" }}
+                >
+                  Click to download
                 </a>
               </p>
-              {course.quizData && (
-                <div>
-                  <h3 className="font-bold mt-2">Quiz Data:</h3>
-                  <pre className="bg-gray-100 p-2 rounded whitespace-pre-wrap">{course.quizData}</pre>
-                </div>
-              )}
             </div>
           ))}
         </div>

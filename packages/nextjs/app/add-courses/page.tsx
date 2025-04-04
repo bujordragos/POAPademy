@@ -75,30 +75,23 @@ const UploadCoursePage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!file) {
-      setUploadStatus("Please select a file to upload");
-      return;
+    let fileUrl = "";
+    if (file) {
+      fileUrl = URL.createObjectURL(file);
     }
-
-    // Create FormData for file upload
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("file", file);
-    formData.append("quizData", quizData);
-
     try {
-      const response = await axios.post("/api/courses", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      // Send JSON data instead of FormData
+      const response = await axios.post("/api/courses", {
+        title,
+        description,
+        fileUrl,
+        quizData,
       });
       setUploadStatus("Course uploaded successfully!");
       console.log(response.data);
     } catch (error: any) {
-      console.error("Upload error:", error);
-      setUploadStatus(`Error uploading course: ${error.message || "Unknown error"}`);
+      console.error(error);
+      setUploadStatus("Error uploading course.");
     }
   };
 
