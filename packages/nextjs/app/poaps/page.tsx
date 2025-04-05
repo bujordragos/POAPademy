@@ -773,7 +773,10 @@ const PoapPage: React.FC = () => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {poaps.map(poap => (
-                    <div key={poap.tokenId} className="border p-4 rounded">
+                    <div
+                      key={poap.tokenId}
+                      className={`border p-4 rounded ${resolvedTheme === "dark" ? "" : "border-gray-500"}`}
+                    >
                       <h2 className="text-xl font-semibold">Token ID: {poap.tokenId}</h2>
                       <p>
                         <strong>Course ID:</strong> {poap.courseId}

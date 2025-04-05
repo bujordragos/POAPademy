@@ -132,12 +132,6 @@ const CoursesPage: React.FC = () => {
       {courses.length === 0 ? (
         <div className="text-center py-10">
           <p className="text-xl mb-4">No courses available yet.</p>
-          <button
-            onClick={handleAddCourse}
-            className={`px-4 py-2 rounded ${resolvedTheme === "dark" ? "bg-[#1F7D53]" : "bg-[#C5BAFF]"} text-white`}
-          >
-            Create Your First Course
-          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
