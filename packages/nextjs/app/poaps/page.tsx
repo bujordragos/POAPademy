@@ -757,7 +757,9 @@ const PoapPage: React.FC = () => {
           <button
             onClick={fetchPOAPs}
             className={
-              resolvedTheme === "dark" ? "bg-[#1F7D53] text-white px-4 py-2" : "bg-[#C5BAFF] text-white px-4 py-2"
+              resolvedTheme === "dark"
+                ? "bg-[#1F7D53] text-white px-4 py-2 mb-5"
+                : "bg-[#C5BAFF] text-white px-4 py-2 mb-5"
             }
           >
             Refresh POAPs

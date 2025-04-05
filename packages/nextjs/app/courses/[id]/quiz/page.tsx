@@ -106,22 +106,45 @@ const QuizPage: React.FC = () => {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
-    try {
-      const response = await axios.post("/api/quiz", {
-        courseId,
-        answers: userAnswers,
-        walletAddress,
-        courseName: course?.title || "",
-        courseDescription: course?.description || "",
-      });
 
-      // Use success value from API response instead of hardcoding
-      setResult({
-        success: response.data.success,
-        score: response.data.score,
-        txHash: response.data.txHash,
-      });
+    try {
+      let response;
+
+      try {
+        // Try to submit the quiz
+        response = await axios.post("/api/quiz", {
+          courseId,
+          answers: userAnswers,
+          walletAddress,
+          courseName: course?.title || "",
+          courseDescription: course?.description || "",
+        });
+
+        // If successful, use the response data
+        setResult({
+          success: response.data.success,
+          score: response.data.score,
+          txHash: response.data.txHash,
+        });
+      } catch (axiosErr: any) {
+        // If the error is a failed quiz (score too low)
+        if (
+          axiosErr.response?.status === 400 &&
+          axiosErr.response?.data?.score !== undefined &&
+          axiosErr.response?.data?.error?.includes("too low")
+        ) {
+          // Still display the score without showing an error message
+          setResult({
+            success: false,
+            score: axiosErr.response.data.score,
+          });
+        } else {
+          // For any other errors, rethrow to be caught by outer try/catch
+          throw axiosErr;
+        }
+      }
     } catch (err: any) {
+      // Handle all other errors
       console.error("Quiz submission error:", err);
       setError(err.response?.data?.error || "Failed to submit quiz");
       setResult({
@@ -168,7 +191,7 @@ const QuizPage: React.FC = () => {
           <p>Your score: {result.score}%</p>
           {result.success && result.txHash && (
             <p className="mt-2">
-              Certificate minted! Transaction:
+              POAP minted! Transaction:
               <a
                 href={`https://etherscan.io/tx/${result.txHash}`}
                 target="_blank"
@@ -179,7 +202,20 @@ const QuizPage: React.FC = () => {
               </a>
             </p>
           )}
-          {!result.success && <p className="mt-2">You need at least 80% to pass and receive a certificate.</p>}
+          {!result.success && <p className="mt-2">You need at least 80% to pass and receive a POAP.</p>}
+
+          {result.success && (
+            <button
+              onClick={() => router.push(`/poaps/`)}
+              className={
+                resolvedTheme === "dark"
+                  ? "mt-4 px-4 py-2 bg-[#1F7D53] hover:bg-[#186144] text-white rounded"
+                  : "mt-4 px-4 py-2 bg-[#C5BAFF] hover:bg-[#AFA0F5] text-white rounded"
+              }
+            >
+              View Your POAPs
+            </button>
+          )}
         </div>
         <button
           onClick={() => router.push(`/courses/${courseId}`)}

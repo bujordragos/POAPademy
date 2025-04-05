@@ -124,6 +124,15 @@ const UploadCoursePage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Prevent multiple submissions
+    if (isSubmitting) return;
+
+    if (quizQuestions.length < 5) {
+      setUploadStatus("Error: Quiz must have at least 5 questions");
+      return;
+    }
+
     setIsSubmitting(true);
     setUploadStatus("Uploading course...");
 
@@ -158,14 +167,30 @@ const UploadCoursePage: React.FC = () => {
       setUploadStatus("Course uploaded successfully!");
       console.log(response.data);
 
+      // Reset form after successful upload
+      setTitle("");
+      setDescription("");
+      setFile(null);
+      setQuizQuestions([{ id: 1, question: "", options: ["", "", "", ""], correctAnswer: "" }]);
+
+      // Navigate to courses page after a delay
       setTimeout(() => {
         router.push("/courses");
       }, 2000);
     } catch (error: any) {
       console.error(error);
-      setUploadStatus(`Error uploading course: ${error.response?.data?.error || error.message}`);
+
+      // Handle duplicate course error specifically
+      if (error.response?.status === 409) {
+        setUploadStatus(`Error: ${error.response.data.error}`);
+      } else {
+        setUploadStatus(`Error uploading course: ${error.response?.data?.error || error.message}`);
+      }
     } finally {
-      setIsSubmitting(false);
+      // Add a delay before allowing resubmission
+      setTimeout(() => {
+        setIsSubmitting(false);
+      }, 3000); // 3 second cooldown
     }
   };
 

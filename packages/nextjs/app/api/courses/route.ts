@@ -34,6 +34,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing course details" }, { status: 400 });
     }
 
+    // Check for existing course with same title
+    const existingCourse = await prisma.course.findFirst({
+      where: {
+        title: title,
+      },
+    });
+
+    if (existingCourse) {
+      return NextResponse.json(
+        { error: "A course with this title already exists" },
+        { status: 409 }, // Conflict status code
+      );
+    }
+
     // Validate quizData if provided
     let parsedQuiz: Quiz | null = null;
     if (quizDataRaw) {
@@ -41,6 +55,10 @@ export async function POST(request: Request) {
         parsedQuiz = JSON.parse(quizDataRaw) as Quiz;
         if (!parsedQuiz.questions || !Array.isArray(parsedQuiz.questions)) {
           throw new Error("Invalid quiz format");
+        }
+
+        if (parsedQuiz.questions.length < 5) {
+          return NextResponse.json({ error: "Quiz must have at least 5 questions" }, { status: 400 });
         }
       } catch (e) {
         return NextResponse.json({ error: "Invalid quiz data format" }, { status: 400 });
