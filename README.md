@@ -53,6 +53,8 @@ This project uses a modern web3 development stack with the following key technol
 - **Axios**: HTTP client for API requests
 - **dotenv**: Environment variable management
 
+---
+
 ## Getting Started
 
 ### Prerequisites
@@ -71,6 +73,7 @@ git clone https://github.com/gavrilaalexandru/POAPademy && cd POAPademy
 ```bash
 yarn install
 ```
+---
 
 ### Development Scripts
 
@@ -89,9 +92,13 @@ yarn deploy
 yarn start
 ```
 
+---
+
 ## Environment Variables
 
 Create a `.env` file in the root directory and add necessary environment variables. Refer to `.env.example` for required variables.
+
+---
 
 ## Troubleshooting
 
@@ -100,6 +107,8 @@ Create a `.env` file in the root directory and add necessary environment variabl
 ```bash
 yarn cache clean
 ```
+
+---
 
 ## 📜 Dependencies
 Dependencies:
