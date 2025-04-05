@@ -64,8 +64,7 @@ This project uses a modern web3 development stack with the following key technol
 
 1. Clone the repository:
 ```bash
-git clone <your-repo-url>
-cd se-2
+git clone <https://github.com/gavrilaalexandru/POAPademy> && cd POAPademy
 ```
 
 2. Install dependencies:
@@ -75,25 +74,21 @@ yarn install
 
 ### Development Scripts
 
+- Initialize a local Blockchain
+```bash
+yarn chain
+```
+
+-Deploy Your Smart Contract
+```bash
+yarn deploy
+```
+
 - Start development server:
 ```bash
 yarn start
 ```
 
-- Compile smart contracts:
-```bash
-yarn compile
-```
-
-- Run tests:
-```bash
-yarn test
-```
-
-- Deploy contracts:
-```bash
-yarn deploy
-```
 ## 📜 Dependencies
 
 @openzeppelin/contracts: A library of secure, reusable smart contracts
