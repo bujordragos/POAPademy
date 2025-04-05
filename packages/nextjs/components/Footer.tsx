@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
-import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaInstagram } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 import { hardhat } from "viem/chains";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
@@ -29,7 +30,7 @@ export const Footer = () => {
             {/* Social media links */}
             <div className="flex gap-6">
               <a
-                href="https://www.instagram.com/poap.ademy5/"
+                href="https://www.instagram.com/poapademy/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={resolvedTheme === "dark" ? "text-white hover:underline" : "text-[#151926] hover:underline"}
@@ -50,7 +51,7 @@ export const Footer = () => {
                 rel="noopener noreferrer"
                 className={resolvedTheme === "dark" ? "text-white hover:underline" : "text-[#151926] hover:underline"}
               >
-                <FaTwitter size={24} />
+                <FaXTwitter size={24} />
               </a>
             </div>
           </div>
