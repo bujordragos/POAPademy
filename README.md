@@ -14,6 +14,7 @@ We bridge the gap between traditional education and the emerging blockchain ecos
 ## Hackathon description & Team members
 
 - 💡 This project was built for the ETHBucharest 2025 Hackathon — an event that empowers hackers to create impactful solutions for real-world challenges, leveraging blockchain technology for transparency, traceability, and digital ownership.
+- 📎 All submissions were uploaded to DoraHacks as part of the official hackathon process: [ETHBucharest 2025 on DoraHacks](https://dorahacks.io/hackathon/ethbucharest2025/buidl)
 
 
 ### 👥 Team Members
