@@ -16,12 +16,12 @@ We bridge the gap between traditional education and the emerging blockchain ecos
 
 ### 👥 Team Members
 
-| Name             | Role                    | Contact / Profile                      |
-|------------------|--------------------------|-----------------------------------------|
-| [@bujordragos] | Smart Contract Dev        | [Twitter / GitHub / Lens / Email]       |
-| [Name Placeholder] | Frontend / Fullstack Dev | [Twitter / GitHub / Lens / Email]       |
-| [Name Placeholder] | Designer / UX            | [Twitter / GitHub / Lens / Email]       |
-| [Name Placeholder] | BD / Pitch / Everything Else | [Twitter / GitHub / Lens / Email]   |
+| Name             | Role                     | Contact / Profile                            |
+|------------------|--------------------------|----------------------------------------------|
+| Gavrila Alexandru| Fullstack Dev            | [Github](https://github.com/gavrilaalexandru)|
+| Ghetiu Tudor     | Smart Contract / Backend | [Github](https://github.com/gavrilaalexandru)|
+| Bujor Dragos     | Marketing, PM & BizDev   | [Github](https://github.com/gavrilaalexandru)|
+| Bejan Ionut      | Visual & Media           | [Github](https://github.com/gavrilaalexandru)|
 
 ---
 
