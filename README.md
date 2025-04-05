@@ -2,11 +2,27 @@
 
 **POAPademy** is an innovative decentralized education platform that redefines how academic achievements are **verified** and **preserved**.
 
-[🎥 Watch the presentation video for an idea of how this works](https://www.youtube.com/watch?v=L8Q6gqO6rMc)
+🎥 [Watch the presentation video for an idea of how this works](https://www.youtube.com/watch?v=L8Q6gqO6rMc)
+
+🚀 [Read the business plan here](https://github.com/gavrilaalexandru/POAPademy/blob/main/business%20plan%20poapademy.pdf)
 
 We bridge the gap between traditional education and the emerging blockchain ecosystem by empowering universities, educators, and communities to:
 - 🧠 Deliver **courses** and **quizzes**
 - 🎯 Reward students with **verifiable certificates** in the form of **POAPs** (Proof of Attendance Protocol tokens)
+---
+
+## Hackathon description & Team members
+
+
+### 👥 Team Members
+
+| Name             | Role                    | Contact / Profile                      |
+|------------------|--------------------------|-----------------------------------------|
+| [@bujordragos] | Smart Contract Dev        | [Twitter / GitHub / Lens / Email]       |
+| [Name Placeholder] | Frontend / Fullstack Dev | [Twitter / GitHub / Lens / Email]       |
+| [Name Placeholder] | Designer / UX            | [Twitter / GitHub / Lens / Email]       |
+| [Name Placeholder] | BD / Pitch / Everything Else | [Twitter / GitHub / Lens / Email]   |
+
 ---
 
 ## 🔐 How It Works
