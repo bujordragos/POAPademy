@@ -50,6 +50,8 @@
   },
   "devDependencies": {
     "@next/swc-darwin-arm64": "^15.2.4",
+    "@swc/core": "^1.11.16",
+    "@swc/helpers": "^0.5.15",
     "husky": "~9.1.6",
     "lint-staged": "~13.2.2",
     "prisma": "^6.5.0"
