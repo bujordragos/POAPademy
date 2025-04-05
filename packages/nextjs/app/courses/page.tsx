@@ -89,7 +89,7 @@ const CoursesPage: React.FC = () => {
 
   // Redirect to course upload page
   const handleAddCourse = () => {
-    router.push("/add-course");
+    router.push("/add-courses");
   };
 
   if (loading) {
