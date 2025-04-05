@@ -90,6 +90,7 @@ yarn start
 ```
 
 ## 📜 Dependencies
+Dependencies:
 
 @openzeppelin/contracts: A library of secure, reusable smart contracts
 
