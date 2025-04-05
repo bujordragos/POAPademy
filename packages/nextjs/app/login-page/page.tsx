@@ -30,7 +30,7 @@ export default function LoginPage() {
 
       if (accounts && accounts.length > 0) {
         // Successfully connected
-        router.push("/add-courses");
+        router.back();
       } else {
         throw new Error("Failed to connect to MetaMask.");
       }

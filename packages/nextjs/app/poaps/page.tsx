@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ethers } from "ethers";
 import { useTheme } from "next-themes";
 
@@ -672,9 +673,51 @@ const PoapPage: React.FC = () => {
   const [userAddress, setUserAddress] = useState<string>("");
   const [poaps, setPoaps] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
+
+  // Authentication check on component mount
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      try {
+        // Check if we're in browser and MetaMask exists
+        if (typeof window === "undefined" || !window.ethereum) {
+          console.log("MetaMask not available");
+          router.push("/login-page");
+          return;
+        }
+
+        // Get accounts - will trigger MetaMask popup if not connected
+        try {
+          const accounts = await window.ethereum.request({
+            method: "eth_accounts",
+          });
+
+          // If no accounts, user is not connected
+          if (!accounts || accounts.length === 0) {
+            console.log("No accounts found, redirecting to login");
+            router.push("/login-page");
+            return;
+          }
+
+          // User is authenticated, continue loading the page
+          setUserAddress(accounts[0]);
+          setIsLoading(false);
+        } catch (error) {
+          console.error("Error checking accounts:", error);
+          router.push("/login-page");
+        }
+      } catch (error) {
+        console.error("Authentication check failed:", error);
+        router.push("/login-page");
+      }
+    };
+
+    checkAuthentication();
+  }, [router]);
 
   const connectWallet = async () => {
     if (typeof window.ethereum !== "undefined") {
@@ -736,6 +779,17 @@ const PoapPage: React.FC = () => {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-4 flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <p className="text-xl mb-2">Checking wallet connection...</p>
+          <div className="w-8 h-8 border-4 border-t-blue-500 border-b-blue-700 rounded-full animate-spin mx-auto"></div>
+        </div>
+      </div>
+    );
+  }
 
   if (!mounted) return null;
 
