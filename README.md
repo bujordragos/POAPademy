@@ -64,7 +64,7 @@ This project uses a modern web3 development stack with the following key technol
 
 1. Clone the repository:
 ```bash
-git clone <https://github.com/gavrilaalexandru/POAPademy> && cd POAPademy
+git clone https://github.com/gavrilaalexandru/POAPademy && cd POAPademy
 ```
 
 2. Install dependencies:
