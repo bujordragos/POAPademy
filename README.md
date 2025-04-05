@@ -134,3 +134,4 @@ lint-staged: For running linting tasks on staged files
 
 @next/swc-darwin-arm64: Next.js specific dependency for Apple's ARM architecture (for M1/M2 Macs)
 
+---
