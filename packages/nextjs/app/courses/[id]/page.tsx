@@ -26,6 +26,9 @@ const CourseDetailPage: React.FC = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [alreadyCompleted, setAlreadyCompleted] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [walletAddress, setWalletAddress] = useState<string>("");
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -43,6 +46,22 @@ const CourseDetailPage: React.FC = () => {
         if (!accounts || accounts.length === 0) {
           router.push("/login-page");
           return;
+        }
+
+        setWalletAddress(accounts[0]);
+
+        // Check if user already has a certificate for this course
+        try {
+          const certificateResponse = await axios.get(
+            `/api/certificate/check?courseId=${courseId}&walletAddress=${accounts[0]}`,
+          );
+
+          if (certificateResponse.data.exists) {
+            setAlreadyCompleted(true);
+          }
+        } catch (certErr) {
+          console.error("Error checking certificate:", certErr);
+          // Continue loading the course even if certificate check fails
         }
 
         // Fetch course data
@@ -125,12 +144,37 @@ const CourseDetailPage: React.FC = () => {
 
       <div>
         <h2 className="text-xl font-semibold mb-4">Quiz Information</h2>
-        <p>Complete the quiz with a score of at least 80% to earn your certificate.</p>
+
+        {alreadyCompleted ? (
+          <div
+            className={
+              resolvedTheme === "dark"
+                ? "bg-green-100 border border-green-400 text-green-700 p-4 rounded mb-4"
+                : "bg-purple-200 border-purple-300 text-purple-900 p-4 rounded mb-4"
+            }
+          >
+            <p>You have already completed this course and received a certificate!</p>
+            <button
+              onClick={() => router.push(`/poaps/`)}
+              className={`mt-4 px-4 py-2 rounded ${
+                resolvedTheme === "dark" ? "bg-[#1F7D53]" : "bg-[#C5BAFF]"
+              } text-white`}
+            >
+              View Your POAPs
+            </button>
+          </div>
+        ) : (
+          <p>Complete the quiz with a score of at least 80% to earn your certificate.</p>
+        )}
+
         <button
           onClick={handleStartQuiz}
-          className={`mt-4 px-4 py-2 rounded ${resolvedTheme === "dark" ? "bg-[#1F7D53]" : "bg-[#C5BAFF]"} text-white`}
+          disabled={alreadyCompleted}
+          className={`mt-4 px-4 py-2 rounded ${resolvedTheme === "dark" ? "bg-[#1F7D53]" : "bg-[#C5BAFF]"} text-white ${
+            alreadyCompleted ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
-          Start Quiz
+          {alreadyCompleted ? "Already Completed" : "Start Quiz"}
         </button>
       </div>
     </div>

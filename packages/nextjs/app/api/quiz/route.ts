@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { mintCertificate } from "~~/lib/contractService";
+import { checkCertificateExists, mintCertificate } from "~~/lib/contractService";
 import { prisma } from "~~/lib/prisma";
 
 interface QuizQuestion {
@@ -34,6 +34,23 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { courseId, answers, walletAddress, courseName, courseDescription } = body;
+
+    // Check if the user already has a certificate for this course
+    try {
+      // We need to modify the mintCertificate function to add this capability
+      // For now, we'll use the contract directly to check
+      const certificateExists = await checkCertificateExists(walletAddress, Number(courseId));
+
+      if (certificateExists) {
+        return NextResponse.json(
+          { success: false, error: "You have already completed this course and received a certificate" },
+          { status: 409 }, // Conflict status code
+        );
+      }
+    } catch (error) {
+      console.error("Error checking certificate existence:", error);
+      // Continue with the quiz processing even if the check fails
+    }
 
     const course = await prisma.course.findUnique({
       where: { id: Number(courseId) },
@@ -84,6 +101,13 @@ export async function POST(request: Request) {
       const txHash = await mintCertificate(walletAddress, Number(courseId), courseName, courseDescription);
       return NextResponse.json({ success: true, txHash, score }, { status: 200 });
     } catch (error: any) {
+      if (error.message && error.message.includes("already minted")) {
+        return NextResponse.json(
+          { success: false, error: "You have already completed this course and received a certificate", score },
+          { status: 409 },
+        );
+      }
+
       return NextResponse.json(
         { success: false, error: `Failed to mint certificate: ${error.message}`, score },
         { status: 500 },

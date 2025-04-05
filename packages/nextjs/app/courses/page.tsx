@@ -18,6 +18,8 @@ const CoursesPage: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [completedCourses, setCompletedCourses] = useState<Record<number, boolean>>({});
+  const [walletAddress, setWalletAddress] = useState<string>("");
   const router = useRouter();
   const { resolvedTheme } = useTheme();
 
@@ -26,6 +28,27 @@ const CoursesPage: React.FC = () => {
       try {
         const res = await axios.get("/api/courses");
         setCourses(res.data.courses);
+
+        // After fetching courses, check which ones the user has completed
+        if (walletAddress) {
+          const completionStatus: Record<number, boolean> = {};
+
+          // Check each course's completion status
+          for (const course of res.data.courses) {
+            try {
+              const certificateResponse = await axios.get(
+                `/api/certificate/check?courseId=${course.id}&walletAddress=${walletAddress}`,
+              );
+
+              completionStatus[course.id] = certificateResponse.data.exists;
+            } catch (err) {
+              console.error(`Error checking certificate for course ${course.id}:`, err);
+              completionStatus[course.id] = false;
+            }
+          }
+
+          setCompletedCourses(completionStatus);
+        }
       } catch (error: any) {
         console.error("Error fetching courses:", error);
         setError(error.response?.data?.error || "Failed to load courses");
@@ -51,6 +74,8 @@ const CoursesPage: React.FC = () => {
           return;
         }
 
+        setWalletAddress(accounts[0]);
+
         // Auth checks passed, fetch courses
         fetchCourses();
       } catch (error) {
@@ -60,7 +85,7 @@ const CoursesPage: React.FC = () => {
     };
 
     checkAuth();
-  }, [router]);
+  }, [router, walletAddress]);
 
   // Redirect to course upload page
   const handleAddCourse = () => {
@@ -136,17 +161,28 @@ const CoursesPage: React.FC = () => {
                     View Details
                   </Link>
 
-                  {course.quizData && (
-                    <Link href={`/courses/${course.id}/quiz`}>
+                  {course.quizData &&
+                    (completedCourses[course.id] ? (
                       <span
-                        className={`px-3 py-1 rounded ${
-                          resolvedTheme === "dark" ? "bg-[#1F7D53]" : "bg-[#C5BAFF]"
-                        } text-white font-medium text-sm`}
+                        className={
+                          resolvedTheme === "dark"
+                            ? "px-3 py-1 rounded bg-[#1F7D53] text-white font-medium text-sm"
+                            : "px-3 py-1 rounded bg-[#C5BAFF] text-white font-medium text-sm"
+                        }
                       >
-                        Take Quiz
+                        Completed ✓
                       </span>
-                    </Link>
-                  )}
+                    ) : (
+                      <Link href={`/courses/${course.id}/quiz`}>
+                        <span
+                          className={`px-3 py-1 rounded ${
+                            resolvedTheme === "dark" ? "bg-[#1F7D53]" : "bg-[#C5BAFF]"
+                          } text-white font-medium text-sm`}
+                        >
+                          Start Quiz
+                        </span>
+                      </Link>
+                    ))}
                 </div>
               </div>
             </div>

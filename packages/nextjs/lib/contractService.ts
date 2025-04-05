@@ -38,6 +38,31 @@ const CertificateABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
+  // Add the certificateExists function to the ABI
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "courseId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+    ],
+    name: "certificateExists",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
 ];
 
 // Configuration for Hardhat local network
@@ -47,6 +72,34 @@ const HARDHAT_RPC_URL = "http://127.0.0.1:8545";
 // Private key from Hardhat accounts (this is the default first account private key)
 // In production, this would come from an environment variable
 const ADMIN_PRIVATE_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+
+/**
+ * Checks if a certificate already exists for a user and course
+ *
+ * @param recipientAddress The wallet address to check
+ * @param courseId The ID of the course to check
+ * @returns Boolean indicating if the certificate exists
+ */
+export async function checkCertificateExists(recipientAddress: string, courseId: number): Promise<boolean> {
+  if (!recipientAddress || !ethers.isAddress(recipientAddress)) {
+    throw new Error("Invalid recipient wallet address");
+  }
+
+  try {
+    // Create provider for local Hardhat network (read-only is fine for checking)
+    const provider = new ethers.JsonRpcProvider(HARDHAT_RPC_URL);
+
+    // Create contract instance (no need for signer for read-only operations)
+    const certificateContract = new ethers.Contract(CONTRACT_ADDRESS, CertificateABI, provider);
+
+    // Call the certificateExists function from the smart contract
+    return await certificateContract.certificateExists(courseId, recipientAddress);
+  } catch (error: any) {
+    console.error("Error checking if certificate exists:", error);
+    // Return false by default if the check fails
+    return false;
+  }
+}
 
 /**
  * Mints a certificate NFT (POAP) for a user who completed a course
@@ -71,6 +124,12 @@ export async function mintCertificate(
   console.log(`Starting certificate minting process for recipient: ${recipientAddress}, course: ${courseId}`);
 
   try {
+    // First check if certificate already exists
+    const exists = await checkCertificateExists(recipientAddress, courseId);
+    if (exists) {
+      throw new Error("Certificate already minted for this course for this recipient");
+    }
+
     // Create provider and signer for local Hardhat network
     const provider = new ethers.JsonRpcProvider(HARDHAT_RPC_URL);
     const signer = new ethers.Wallet(ADMIN_PRIVATE_KEY, provider);
@@ -81,21 +140,6 @@ export async function mintCertificate(
 
     // Create contract instance
     const certificateContract = new ethers.Contract(CONTRACT_ADDRESS, CertificateABI, signer);
-
-    // Check if the certificate already exists for this recipient and course
-    try {
-      const exists = await certificateContract.certificateExists(courseId, recipientAddress);
-      if (exists) {
-        throw new Error("Certificate already minted for this course for this recipient");
-      }
-    } catch (e) {
-      // If the check fails but not because it already exists, log and continue
-      const error = e as Error;
-      if (error.message && error.message.includes("already minted")) {
-        throw error;
-      }
-      console.warn("Could not check if certificate exists, proceeding with minting:", error.message);
-    }
 
     // Send the transaction to mint the POAP certificate
     console.log("Sending mintPOAP transaction...");
@@ -136,3 +180,7 @@ export async function mintCertificate(
     throw new Error(`Certificate minting failed: ${error.message}`);
   }
 }
+
+// Add this at the bottom to expose the checkCertificateExists function to the mintCertificate object
+// This is needed because we referenced it as mintCertificate.checkCertificateExists in the API
+Object.assign(mintCertificate, { checkCertificateExists });

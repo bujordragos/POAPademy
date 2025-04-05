@@ -38,6 +38,7 @@ const QuizPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ success: boolean; score?: number; txHash?: string } | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>("");
+  const [alreadyCompleted, setAlreadyCompleted] = useState(false);
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -58,6 +59,21 @@ const QuizPage: React.FC = () => {
           return;
         }
         setWalletAddress(accounts[0]);
+
+        // Check if user already has a certificate for this course
+        try {
+          const certificateResponse = await axios.get(
+            `/api/certificate/check?courseId=${courseId}&walletAddress=${accounts[0]}`,
+          );
+
+          if (certificateResponse.data.exists) {
+            setAlreadyCompleted(true);
+          }
+        } catch (certErr) {
+          console.error("Error checking certificate:", certErr);
+          // Continue with loading the quiz even if the certificate check fails
+        }
+
         // Fetch course data
         const response = await axios.get(`/api/courses/${courseId}`);
         const courseData = response.data.course;
@@ -138,6 +154,10 @@ const QuizPage: React.FC = () => {
             success: false,
             score: axiosErr.response.data.score,
           });
+        } else if (axiosErr.response?.status === 409) {
+          // The user already has a certificate
+          setAlreadyCompleted(true);
+          setError("You have already completed this course and received a certificate");
         } else {
           // For any other errors, rethrow to be caught by outer try/catch
           throw axiosErr;
@@ -167,6 +187,29 @@ const QuizPage: React.FC = () => {
     );
   }
 
+  if (alreadyCompleted) {
+    return (
+      <div className="container mx-auto p-4">
+        <div
+          className={
+            resolvedTheme === "dark"
+              ? "bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
+              : "bg-purple-200 border-purple-300 text-purple-900 px-4 py-3 rounded relative mb-4"
+          }
+        >
+          <h2 className="text-xl font-bold mb-2">Course Already Completed!</h2>
+          <p>You have already completed this course and received a certificate.</p>
+        </div>
+        <button
+          onClick={() => router.push(`/courses/${courseId}`)}
+          className={`px-4 py-2 rounded ${resolvedTheme === "dark" ? "bg-[#1F7D53]" : "bg-[#C5BAFF]"} text-white`}
+        >
+          Back to Course
+        </button>
+      </div>
+    );
+  }
+
   if (error && !result) {
     return (
       <div className="container mx-auto p-4">
@@ -185,7 +228,13 @@ const QuizPage: React.FC = () => {
     return (
       <div className="container mx-auto p-4">
         <div
-          className={`${result.success ? "bg-green-100 border-green-400 text-green-700" : "bg-red-100 border-red-400 text-red-700"} px-4 py-3 rounded border relative mb-4`}
+          className={`px-4 py-3 rounded border relative mb-4 ${
+            result.success
+              ? resolvedTheme === "dark"
+                ? "bg-green-900 border-green-700 text-green-200"
+                : "bg-purple-200 border-purple-300 text-purple-900"
+              : "bg-red-100 border-red-400 text-red-700"
+          }`}
         >
           <h2 className="text-xl font-bold mb-2">{result.success ? "Quiz Passed! 🎉" : "Quiz Not Passed"}</h2>
           <p>Your score: {result.score}%</p>
