@@ -2,10 +2,11 @@
 
 **POAPademy** is an innovative decentralized education platform that redefines how academic achievements are **verified** and **preserved**.
 
+[🎥 Watch the presentation video for an idea of how this works](https://www.youtube.com/watch?v=L8Q6gqO6rMc)
+
 We bridge the gap between traditional education and the emerging blockchain ecosystem by empowering universities, educators, and communities to:
 - 🧠 Deliver **courses** and **quizzes**
 - 🎯 Reward students with **verifiable certificates** in the form of **POAPs** (Proof of Attendance Protocol tokens)
-
 ---
 
 ## 🔐 How It Works
