@@ -19,9 +19,9 @@ We bridge the gap between traditional education and the emerging blockchain ecos
 | Name             | Role                     | Contact / Profile                            |
 |------------------|--------------------------|----------------------------------------------|
 | Gavrila Alexandru| Fullstack Dev            | [Github](https://github.com/gavrilaalexandru)|
-| Ghetiu Tudor     | Smart Contract / Backend | [Github](https://github.com/gavrilaalexandru)|
-| Bujor Dragos     | Marketing, PM & BizDev   | [Github](https://github.com/gavrilaalexandru)|
-| Bejan Ionut      | Visual & Media           | [Github](https://github.com/gavrilaalexandru)|
+| Ghetiu Tudor     | Smart Contract / Backend | [Github](https://github.com/GhetiuTudor)|
+| Bujor Dragos     | Marketing, PM & BizDev   | [Github](https://github.com/bujordragos)|
+| Bejan Ionut      | Visual & Media           | [Github](https://github.com/Bejan1234)|
 
 ---
 
