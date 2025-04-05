@@ -24,5 +24,3 @@ We bridge the gap between traditional education and the emerging blockchain ecos
 - 🔗 **On-chain** verification for credibility and transparency  
 
 ---
-
-Stay tuned for more updates as we continue building the future of decentralized learning! 🚀
