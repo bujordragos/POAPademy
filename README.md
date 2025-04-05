@@ -89,6 +89,18 @@ yarn deploy
 yarn start
 ```
 
+## Environment Variables
+
+Create a `.env` file in the root directory and add necessary environment variables. Refer to `.env.example` for required variables.
+
+## Troubleshooting
+
+- Ensure you're using the correct Node.js version
+- Clear yarn cache if you encounter dependency issues:
+```bash
+yarn cache clean
+```
+
 ## 📜 Dependencies
 Dependencies:
 
@@ -113,14 +125,3 @@ lint-staged: For running linting tasks on staged files
 
 @next/swc-darwin-arm64: Next.js specific dependency for Apple's ARM architecture (for M1/M2 Macs)
 
-## Environment Variables
-
-Create a `.env` file in the root directory and add necessary environment variables. Refer to `.env.example` for required variables.
-
-## Troubleshooting
-
-- Ensure you're using the correct Node.js version
-- Clear yarn cache if you encounter dependency issues:
-```bash
-yarn cache clean
-```
